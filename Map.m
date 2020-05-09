@@ -1,0 +1,223 @@
+
+
+station_lat=[-62.2;-64.233;-69;-68.583;-66.55;-78.45;-66.267]
+station_lon=[-58.933;-56.7170;39.583;77.983;93.0170;106.867;110.633]
+%%
+
+figure(1); clf
+load coast 
+antmap
+plotm(lat,long) 
+geoshow('landareas.shp','FaceColor','yellow')
+
+
+%%
+[M1,I1]=min(abs(lat-station_lat(1)))
+[M2,I2]=min(abs(lat-station_lat(2)))
+[M3,I3]=min(abs(lat-station_lat(3)))
+[M4,I4]=min(abs(lat-station_lat(4)))
+[M5,I5]=min(abs(lat-station_lat(5)))
+[M6,I6]=min(abs(lat-station_lat(6)))
+[M7,I7]=min(abs(lat-station_lat(7)))
+
+[M1a,I1a]=min(abs(long-station_lon(1)))
+[M2a,I2a]=min(abs(long-station_lon(2)))
+[M3a,I3a]=min(abs(long-station_lon(3)))
+[M4a,I4a]=min(abs(long-station_lon(4)))
+[M5a,I5a]=min(abs(long-station_lon(5)))
+[M6a,I6a]=min(abs(long-station_lon(6)))
+[M7a,I7a]=min(abs(long-station_lon(7)))
+%%
+figure(1); clf
+load coast 
+antmap
+plotm(lat,long) 
+geoshow('landareas.shp','FaceColor','yellow')
+title('Antarctica Map and its Air Temperature Observation Stations Locations')
+scatterm(lat(I1),long(I1a),'filled', 'blue')
+hold on
+scatterm(lat(I2),long(I2a),'filled', 'blue')
+%scatterm(lat(I3),long(I3a),'filled', 'blue')
+scatterm(lat(I4),long(I4a),'filled', 'blue')
+%scatterm(lat(I5),long(I5a),'filled', 'blue')
+%scatterm(lat(I6),long(I6a),'filled', 'blue')
+scatterm(lat(I7),long(I7a),'filled', 'blue')
+legend('coast line')
+%%
+% The anomaly is the difference from the mean over some baseline period. In
+% this case, we will pick the baseline period as the first time year 1973-1983 for consistency
+% across each station (though note that this is a choice we are making, and
+% that different temperature analyses often pick different baselines!)
+%
+
+%[bm1,bstd1,anomaly1,slope1,amt1,astd1]=temperature(890500);
+[bm2,bstd2,anomaly2,slope2,amt2,astd2]=temperature(890550);
+%[bm3,bstd3,anomaly3,slope3,amt3,astd3]=temperature(895320);-doesn't work
+%[bm4,bstd4,anomaly4,slope4,amt4,astd4]=temperature(895710);
+%[bm5,bstd5,anomaly5,slope5,amt5,ast5]=temperature(895920);
+%[bm6,bstd6,anomaly6,slope6,amt6,ast6]=temperature(896060);
+%[bm7,bstd7,anomaly7,slope7,amt7,astd7]=temperature(896110);
+
+% only four stations work with the function code
+
+%%
+figure(2);clf
+year=[1973:2002]'
+plot(year,anomaly1,'r.')
+hold on
+plot(year,anomaly2,'m.')
+hold on
+plot(year,anomaly4,'k.')
+hold on
+plot(year,anomaly7,'b.')
+legend('890500 row data','890550','895320','896110')
+xlabel('year')
+ylabel('temperature anomaly (^oC)')
+
+mov1=movmean(anomaly1,5)
+plot(year,mov1,'r-')
+hold on
+mov2=movmean(anomaly2,5)
+plot(year,mov2,'m-')
+hold on
+mov4=movmean(anomaly4,5)
+plot(year,mov4,'k-')
+hold on
+mov7=movmean(anomaly7,5)
+plot(year,mov7,'b-')
+legend('890500 5-yr-moving mean','890550','895320','896110')
+xlabel('year')
+ylabel('temperature anomaly (^oC)')
+title('temperature anomaly (^oC) of annual mean temperature with baseline (1973-1983)')
+
+x=[1:30]'
+y1=slope1(:,1)*x+slope1(:,1)
+plot(year,y1,'r--')
+
+y2=slope2(:,1)*x+slope2(:,1)
+plot(year,y2,'m--')
+
+y4=slope4(:,1)*x+slope4(:,1)
+plot(year,y4,'k--')
+
+y7=slope7(:,1)*x+slope7(:,1)
+plot(year,y7,'b--')
+legend('#1 calculated annual mean','#2','#4','#7', '#1 5-yr-moving mean','#2','#4','#7','#1 linear regression','#2','#4','#7')
+
+
+hold off
+
+%% annual mean temperature and its error bar
+figure(4);clf
+year=[1973:2002]'
+plot(year,astd1,'r-')
+hold on
+plot(year,astd2,'m-')
+hold on
+plot(year,astd4,'k-')
+hold on
+plot(year,astd7,'b-')
+legend('#1','#2','#4','#7')
+xlabel('year')
+ylabel('standard deviation of the monthly mean tempeatures (^oC)')
+title('standard deviation of the monthly mean tempeatures (^oC)')
+
+hold off
+
+%%
+figure(5);clf
+r1=max(amt1)-min(amt1)
+r2=max(amt2)-min(amt2)
+r4=max(amt4)-min(amt4)
+r7=max(amt7)-min(amt7)
+
+X = categorical({'#1','#2','#4','#7'});
+X = reordercats(X,{'#1','#2','#4','#7'});
+Y = [r1 std1; r2 std2; r4 std4; r7 std7];
+bar(X,Y,0.8)
+title('range of and standard deviation of annual mean temperature at each station (^oC)')
+legend('range of annual mean temperature','standard devation of annual mean temperature')
+%%
+figure(6);clf
+load coast 
+antmap
+plotm(lat,long) 
+geoshow('landareas.shp','FaceColor','black')
+
+scatterm(lat(I1),long(I1a),100,r1,'filled')
+hold on
+scatterm(lat(I2),long(I2a),100,r2,'filled')
+
+scatterm(lat(I4),long(I4a),100,r4,'filled')
+
+scatterm(lat(I7),long(I7a),100,r7,'filled')
+colorbar
+title('range of annual mean temperature at each station (^oC)')
+
+%%
+std1=std(amt1)
+std2=std(amt2)
+std4=std(amt7)
+std7=std(amt7)
+figure(6);clf
+load coast 
+antmap
+plotm(lat,long) 
+geoshow('landareas.shp','FaceColor','black')
+
+scatterm(lat(I1),long(I1a),100,std1,'filled')
+hold on
+scatterm(lat(I2),long(I2a),100,std2,'filled')
+
+scatterm(lat(I4),long(I4a),100,std4,'filled')
+
+scatterm(lat(I7),long(I7a),100,std7,'filled')
+colorbar
+title('standard deviation of annual mean temperature at each station (^oC)')
+
+%%
+%twovari=2*vari
+%temp_emge= twovari./ P(:,1)
+%year_emge= temp_emge+2006
+%year_emergence=ceil(year_emge)
+
+bstd=vertcat(bstd1,bstd2,bstd4,bstd7)
+signal=vertcat(slope1(:,1),slope2(:,1),slope4(:,1),slope7(:,1))
+vari=1.5*bstd
+temp_emge= vari./ signal
+year_emge= temp_emge + 1973
+year_emergence=ceil(year_emge)
+%%
+figure(6);clf
+load coast 
+antmap
+plotm(lat,long) 
+geoshow('landareas.shp','FaceColor','black')
+
+scatterm(lat(I1),long(I1a),100,year_emergence(1),'filled')
+hold on
+scatterm(lat(I2),long(I2a),100,year_emergence(2),'filled')
+
+
+colorbar
+title('year of emergence of warming at station 1 and 2')
+
+
+
+
+%%
+figure(1); clf
+load coast 
+antmap
+plotm(lat,long) 
+geoshow('landareas.shp','FaceColor','yellow')
+title('Antarctica Map and its Air Temperature Observation Stations Locations')
+scatterm(lat(I1),long(I1a),'filled', 'blue')
+hold on
+scatterm(lat(I2),long(I2a),'filled', 'blue')
+
+scatterm(lat(I4),long(I4a),'filled', 'blue')
+
+scatterm(lat(I7),long(I7a),'filled', 'blue')
+legend('coast line')
+title('temperature anomaly from 1973 to 2002 with the baseline -57^oC at 4 stations in Antarctica')
